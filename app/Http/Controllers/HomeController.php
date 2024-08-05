@@ -9,15 +9,19 @@ use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
+
     public function index()
     {
         $data = [
             'categories' => Category::all(),
+
             'products' => Product::orderByDesc('id')->paginate(3),
+
             'categoryCounts' => Category::leftJoin('products', 'categories.id', '=', 'products.category_id')
                 ->select('categories.name as category_name', DB::raw('count(products.id) as product_count'))
                 ->groupBy('categories.id', 'categories.name')
                 ->get(),
+
             'posts' => DB::table('products')
                 ->join('categories', 'products.category_id', '=', 'categories.id')
                 ->select('products.name', 'products.img_thumbnail', 'products.created_at')
@@ -38,8 +42,6 @@ class HomeController extends Controller
         return view('clients.home', $data);
     }
 
-
-
     public function show(string $id)
     {
 
@@ -53,7 +55,6 @@ class HomeController extends Controller
         return view('clients.' . __FUNCTION__, compact('data', 'relatedNews'));
     }
 
-
     public function social()
     {
         $data = Product::join('categories', 'products.category_id', '=', 'categories.id')
@@ -63,7 +64,6 @@ class HomeController extends Controller
         return view('clients.social-news', compact('data'));
     }
 
-
     public function search(Request $request)
     {
         $keyword = $request->input('keyword');
@@ -71,7 +71,7 @@ class HomeController extends Controller
 
         $products = [];
         foreach ($categories as $category) {
-            $categoryProducts = $category->product()->get();
+            $categoryProducts = $category->products()->get();
             $products = array_merge($products, $categoryProducts->toArray());
         }
 

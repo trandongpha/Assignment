@@ -11,7 +11,7 @@
 
 <head>
     <meta charset="utf-8">
-  
+
     <title>Tin tức đời sống</title>
 
     <!-- mobile responsive meta -->
@@ -40,7 +40,7 @@
     <!-- /navigation -->
 
     <!-- start of banner -->
-   @yield('content')
+    @yield('content')
 
     <footer class="footer">
         @include('clients.layouts.parials.footer')

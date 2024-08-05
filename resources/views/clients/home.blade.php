@@ -75,11 +75,18 @@
                     <div class="col-lg-4 mb-5">
                         <article class="card">
                             <div class="post-slider slider-sm">
-                                <img src="{{ $item->img_thumbnail }}" class="card-img-top" alt="post-thumb">
+                                @php
+                                    $url = $item->img_thumbnail;
+                                    if (!Str::contains($url, 'http')) {
+                                        $url = Storage::url($url);
+                                    }
+                                @endphp
+                                <img src="{{ $url }}" class="card-img-top" alt="post-thumb">
                             </div>
 
                             <div class="card-body">
-                                <h3 class="h4 mb-3"><a class="post-title" href="{{route('clients.show', $item->id)}}">{{ $item->name }}</a>
+                                <h3 class="h4 mb-3"><a class="post-title"
+                                        href="{{ route('clients.show', $item->id) }}">{{ $item->name }}</a>
                                 </h3>
                                 <ul class="card-meta list-inline">
                                     <li class="list-inline-item">
@@ -120,7 +127,13 @@
                     @foreach ($culture as $item)
                         <article class="card mb-4">
                             <div class="post-slider">
-                                <img src="{{ $item->img_thumbnail }}" class="card-img-top" alt="post-thumb">
+                                @php
+                                    $url = $item->img_thumbnail;
+                                    if (!Str::contains($url, 'http')) {
+                                        $url = Storage::url($url);
+                                    }
+                                @endphp
+                                <img src="{{ $url }}" class="card-img-top" alt="post-thumb">
                             </div>
                             <div class="card-body">
                                 <h3 class="mb-3"><a class="post-title" href="">{{ $item->name }}</a>
@@ -156,9 +169,11 @@
                 <aside class="col-lg-4 sidebar-home">
                     <div class="widget">
                         <h4 class="widget-title"><span>Tìm Kiếm bài viết theo danh mục </span></h4>
-                        <form action="{{ route('search') }}" method="POST" name="mc-embedded-subscribe-form" target="_blank" class="widget-search">
+                        <form action="{{ route('search') }}" method="POST" name="mc-embedded-subscribe-form"
+                            target="_blank" class="widget-search">
                             @csrf
-                            <input class="mb-3" id="search-query" name="keyword" type="search" placeholder="Tìm kiếm" pattern=".*\S+.*" title="Vui lòng nhập từ khóa tìm kiếm" required>
+                            <input class="mb-3" id="search-query" name="keyword" type="search"
+                                placeholder="Tìm kiếm" pattern=".*\S+.*" title="Vui lòng nhập từ khóa tìm kiếm" required>
                             <i class="search-icon"></i>
                             <button type="submit" class="btn btn-primary btn-block" name="subscribe">Result</button>
                             <div style="position: absolute; left: -5000px;" aria-hidden="true">
@@ -205,7 +220,15 @@
                         @foreach ($posts as $post)
                             <article class="widget-card">
                                 <div class="d-flex">
-                                    <img class="card-img-sm" src="{{ $post->img_thumbnail }}">
+                                    @php
+                                        $url = $item->img_thumbnail;
+                                        if (!Str::contains($url, 'http')) {
+                                            $url = Storage::url($url);
+                                        }
+                                    @endphp
+                                    <img class="card-img-sm" src="{{ $url }}" class="card-img-top"
+                                        alt="post-thumb">
+                                        
                                     <div class="ml-3">
                                         <h5><a class="post-title" href="post/elements/">{{ $post->name }}</a></h5>
                                         <ul class="card-meta list-inline mb-0">

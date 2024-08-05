@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -11,7 +14,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $data = Product::query()->with('category')->latest('id')->paginate(5);
+
+        return view('admin.product.' . __FUNCTION__, compact('data'));
     }
 
     /**
@@ -19,7 +24,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::query()->pluck('name', 'id')->all();
+
+        return view('admin.product.' . __FUNCTION__, compact('categories'));
     }
 
     /**
@@ -27,23 +34,34 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->except('img_thumbnail');
+
+        if ($request->hasFile('img_thumbnail')) {
+            $data['img_thumbnail'] = Storage::put('product', $request->file('img_thumbnail'));
+        }
+        Product::query()->create($data);
+        return redirect()->route('product.index');
     }
+
+
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        //
+        $model = Product::query()->findOrFail($id);
+        return view('admin.product.show', compact('model'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Product $product)
     {
-        //
+        $categories = Category::query()->pluck('name', 'id')->all();
+
+        return view('admin.product.edit', compact('categories', 'product'));
     }
 
     /**
@@ -51,7 +69,25 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $model = Product::query()->findOrFail($id);
+
+        $data = $request->except('img_thumbnail');
+
+
+        if ($request->hasFile('img_thumbnail')) {
+            $data['img_thumbnail'] = Storage::put('product', $request->file('img_thumbnail'));
+        }
+
+        $currentImgThumb = $model->img_thumbnail;
+        $model->update($data);
+        if (
+            $request->hasFile('img_thumbnail')
+            &&  $currentImgThumb
+            && Storage::exists($currentImgThumb)
+        ) {
+            Storage::delete($currentImgThumb);
+        }
+        return back();
     }
 
     /**
@@ -59,6 +95,14 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $data = Product::query()->findOrFail($id);
+
+        $data->delete();
+
+        if ($data->img_thumbnail && Storage::exists($data->img_thumbnail)) {
+            Storage::delete($data->img_thumbnail);
+        }
+
+        return back();
     }
 }
